@@ -2,10 +2,9 @@
 //
 
 #include "pch.h"
-#include "ChatServer.h"
+#include "ChatServerR.h"
 #include "SocServer.h"
 #include <afxsock.h>
-
 
 // CSocServer
 
@@ -28,7 +27,7 @@ void CSocServer::Init(HWND hWnd)
 void CSocServer::OnAccept(int nErrorCode)
 {
 	// TODO: 여기에 특수화된 코드를 추가 및/또는 기본 클래스를 호출합니다.
-
+	
 	// 클라이언트가 접속하면 메인 윈도우에 접속메시지(UM_ACCEPT)를 보낸다
 	Accept(m_socCom);
 	SendMessage(m_hWnd, UM_ACCEPT, 0, 0);
@@ -36,8 +35,10 @@ void CSocServer::OnAccept(int nErrorCode)
 	CSocket::OnAccept(nErrorCode);
 }
 
+
 CSocCom* CSocServer::GetAcceptSocCom()
 {
+	// TODO: 여기에 구현 코드 추가.
 	// 통신소켓을 리턴				근데 틀린부분이없어
 	// 반환되는 통신 소켓은 클라이언트와 연결
 	return &m_socCom;

@@ -1,11 +1,11 @@
 ﻿
-// ChatClientDlg.cpp: 구현 파일
+// ChatServerRDlg.cpp: 구현 파일
 //
 
 #include "pch.h"
 #include "framework.h"
-#include "ChatClient.h"
-#include "ChatClientDlg.h"
+#include "ChatServerR.h"
+#include "ChatServerRDlg.h"
 #include "afxdialogex.h"
 
 #ifdef _DEBUG
@@ -46,44 +46,43 @@ BEGIN_MESSAGE_MAP(CAboutDlg, CDialogEx)
 END_MESSAGE_MAP()
 
 
-// CChatClientDlg 대화 상자
+// CChatServerRDlg 대화 상자
 
 
 
-CChatClientDlg::CChatClientDlg(CWnd* pParent /*=nullptr*/)
-	: CDialogEx(IDD_CHATCLIENT_DIALOG, pParent)
-	, m_strIP(_T(""))
+CChatServerRDlg::CChatServerRDlg(CWnd* pParent /*=nullptr*/)
+	: CDialogEx(IDD_CHATSERVERR_DIALOG, pParent)
 	, m_strSend(_T(""))
+	, m_strStatus(_T("대기중"))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
 
-void CChatClientDlg::DoDataExchange(CDataExchange* pDX)
+void CChatServerRDlg::DoDataExchange(CDataExchange* pDX)
 {
 	CDialogEx::DoDataExchange(pDX);
 	DDX_Control(pDX, IDC_LIST1, m_list);
-	DDX_Text(pDX, IDC_EDIT_IP, m_strIP);
+	//  DDX_Control(pDX, IDC_EDIT_SEND, m_strSend);
 	DDX_Text(pDX, IDC_EDIT_SEND, m_strSend);
-	DDX_Control(pDX, IDC_BUTTON_CONNECT, m_btnConnect);
-	DDX_Control(pDX, IDC_BUTTON_EXIT, m_btnExit);
-	DDX_Control(pDX, IDC_BUTTON_SEND, m_btnSend);
+	DDX_Text(pDX, IDC_STATIC_STATUS, m_strStatus);
 }
 
-BEGIN_MESSAGE_MAP(CChatClientDlg, CDialogEx)
+BEGIN_MESSAGE_MAP(CChatServerRDlg, CDialogEx)
 	ON_WM_SYSCOMMAND()
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
-	ON_BN_CLICKED(IDC_BUTTON_CONNECT, &CChatClientDlg::OnBnClickedButtonConnect)
-	ON_BN_CLICKED(IDC_BUTTON_SEND, &CChatClientDlg::OnBnClickedButtonSend)
-	ON_BN_CLICKED(IDC_BUTTON_EXIT, &CChatClientDlg::OnBnClickedButtonExit)
-	ON_EN_CHANGE(IDC_EDIT_IP, &CChatClientDlg::OnEnChangeEditIp)
-	ON_EN_CHANGE(IDC_EDIT_SEND, &CChatClientDlg::OnEnChangeEditSend)
+	ON_BN_CLICKED(IDCANCEL, &CChatServerRDlg::OnBnClickedCancel)
+	ON_BN_CLICKED(IDC_BUTTON_SEND, &CChatServerRDlg::OnBnClickedButtonSend)
+	ON_LBN_SELCHANGE(IDC_LIST1, &CChatServerRDlg::OnLbnSelchangeList1)
+	ON_BN_CLICKED(IDC_EXIT, &CChatServerRDlg::OnBnClickedExit)
+	ON_MESSAGE(UM_ACCEPT, OnAccept)
+	ON_MESSAGE(UM_RECEIVE, OnReceive)
 END_MESSAGE_MAP()
 
 
-// CChatClientDlg 메시지 처리기
+// CChatServerRDlg 메시지 처리기
 
-BOOL CChatClientDlg::OnInitDialog()
+BOOL CChatServerRDlg::OnInitDialog()
 {
 	CDialogEx::OnInitDialog();
 
@@ -113,14 +112,33 @@ BOOL CChatClientDlg::OnInitDialog()
 	SetIcon(m_hIcon, FALSE);		// 작은 아이콘을 설정합니다.
 
 	// TODO: 여기에 추가 초기화 작업을 추가합니다.
+	m_socCom = NULL;
 	WSADATA wsa;
 	if (WSAStartup(MAKEWORD(2, 2), &wsa) != 0)
 		return -1;
+	// 서버 소켓을 생성(포트번호 5000)
+	if (m_socServer.Create(5000) == FALSE) {
+		int err = m_socServer.GetLastError();
+		CString error = _T("ERROR : Fail to create Server (ERROR CODE : ");
+		CString strErr = _T("");
+		strErr.Format(_T("%d)"), err);
+
+
+		AfxMessageBox(error + strErr);
+	}
+	else {
+		MessageBox(_T("Success to Create Socket Server"));
+	}
+	// 클라이언트의 접속을 기다린다.
+	m_socServer.Listen();
+	// 소켓 클래스와 메인 윈도우(여기에서는 CChatServerDlg)를 연결
+	m_socServer.Init(this->m_hWnd);
+
 
 	return TRUE;  // 포커스를 컨트롤에 설정하지 않으면 TRUE를 반환합니다.
 }
 
-void CChatClientDlg::OnSysCommand(UINT nID, LPARAM lParam)
+void CChatServerRDlg::OnSysCommand(UINT nID, LPARAM lParam)
 {
 	if ((nID & 0xFFF0) == IDM_ABOUTBOX)
 	{
@@ -137,7 +155,7 @@ void CChatClientDlg::OnSysCommand(UINT nID, LPARAM lParam)
 //  아래 코드가 필요합니다.  문서/뷰 모델을 사용하는 MFC 애플리케이션의 경우에는
 //  프레임워크에서 이 작업을 자동으로 수행합니다.
 
-void CChatClientDlg::OnPaint()
+void CChatServerRDlg::OnPaint()
 {
 	if (IsIconic())
 	{
@@ -164,101 +182,87 @@ void CChatClientDlg::OnPaint()
 
 // 사용자가 최소화된 창을 끄는 동안에 커서가 표시되도록 시스템에서
 //  이 함수를 호출합니다.
-HCURSOR CChatClientDlg::OnQueryDragIcon()
+HCURSOR CChatServerRDlg::OnQueryDragIcon()
 {
 	return static_cast<HCURSOR>(m_hIcon);
 }
 
 
 
-void CChatClientDlg::OnBnClickedButtonConnect()
+void CChatServerRDlg::OnBnClickedCancel()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	// 접속
-	UpdateData(TRUE);
-	m_socCom.Create(); // 생성
-	// 접속 IP주소와 포트 지정
-	if (m_socCom.Connect(m_strIP, 5000) == FALSE) {
-
-		int err = m_socCom.GetLastError();
-		CString error = _T("ERROR : Fail to connect Server (ERROR CODE : ");
-		CString strErr = _T("");
-		strErr.Format(_T("%d)"), err);
-
-
-		AfxMessageBox(error + strErr);
-
-	}
-	else {
-		MessageBox(_T("Success to Connect"));
-	}
-	m_socCom.Init(this->m_hWnd);
+	CDialogEx::OnCancel();
 }
 
 
-void CChatClientDlg::OnBnClickedButtonSend()
+void CChatServerRDlg::OnBnClickedButtonSend()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 	UpdateData(TRUE);
-	TCHAR pTmp[256];
+	char pTmp[256];
 	CString strTmp;
 	// pTmp에 전송할 데이터 입력
 	memset(pTmp, '\0', 256);
 	memcpy(pTmp, (unsigned char*)(LPCTSTR)m_strSend, 256);
 	// 전송
-	m_socCom.Send(pTmp, 256);
+
+	if (m_socCom->Send(pTmp, 256) == FALSE) {
+		MessageBox(_T("Send Error"));
+	}
+	else {
+		MessageBox(_T("Send Success"));
+	}
 
 	// 전송한 데이터도 리스트박스에 보여준다
-	strTmp.Format(_T("%s"), (LPCTSTR)pTmp);
+	strTmp.Format(_T("%s"), pTmp);
 	int i = m_list.GetCount();
 	m_list.InsertString(i, strTmp);
 }
 
 
-void CChatClientDlg::OnBnClickedButtonExit()
+void CChatServerRDlg::OnLbnSelchangeList1()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	MessageBox(_T("Exit"));
-	m_socCom.Close();
 }
 
 
-void CChatClientDlg::OnEnChangeEditIp()
+void CChatServerRDlg::OnBnClickedExit()
 {
-	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
-	// CDialogEx::OnInitDialog() 함수를 재지정 
-	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
-	// 이 알림 메시지를 보내지 않습니다.
-
-	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
 }
 
-
-void CChatClientDlg::OnEnChangeEditSend()
+LPARAM CChatServerRDlg::OnAccept(UINT wParam, LPARAM lParam)
 {
-	// TODO:  RICHEDIT 컨트롤인 경우, 이 컨트롤은
-	// CDialogEx::OnInitDialog() 함수를 재지정 
-	//하고 마스크에 OR 연산하여 설정된 ENM_CHANGE 플래그를 지정하여 CRichEditCtrl().SetEventMask()를 호출하지 않으면
-	// 이 알림 메시지를 보내지 않습니다.
+	// 클라이언트에서 접속 요청이 왔을 때
+	UpdateData(TRUE);
+	m_strStatus = "접속성공";
+	MessageBox(m_strStatus);
+	//	m_list.InsertString(m_list.GetCount(), m_strStatus);
 
-	// TODO:  여기에 컨트롤 알림 처리기 코드를 추가합니다.
+		// 통신용 소켓을 생성한 뒤
+	m_socCom = new CSocCom;
+	// 서버소켓과 통신소켓을 연결한다
+	m_socCom = m_socServer.GetAcceptSocCom();
+
+	m_socCom->Init(this->m_hWnd);
+
+	m_socCom->Send(_T("접속성공"), 256);
+
+	UpdateData(FALSE);
+	return TRUE;
 }
 
-LPARAM CChatClientDlg::OnReceive(UINT wParam, LPARAM lPARAM)
+LPARAM CChatServerRDlg::OnReceive(UINT wParam, LPARAM lPARAM)
 {
-	// 접속된 곳에서 데이터가 도착했을 때 --> 데이터가 도착을 안하는거 같은데
-	MessageBox(_T("OnReceive"));
-	char pTmp[256];
+	// 접속된 곳에서 데이터가 도착했을 때
+
+	TCHAR pTmp[256];
 	CString strTmp;
 	memset(pTmp, '\0', 256);
 
 	// 데이터를 pTmp에 받는다
-	if (m_socCom.Receive(pTmp, 256) == FALSE) {
-		MessageBox(_T("Receive Error"));
-	}
-	else {
-		MessageBox(_T("Receive Success"));
-	}
+	m_socCom->Receive(pTmp, 256);
 	strTmp.Format(_T("%s"), pTmp);
 
 	// 리스트박스에 보여준다.
@@ -266,4 +270,3 @@ LPARAM CChatClientDlg::OnReceive(UINT wParam, LPARAM lPARAM)
 	m_list.InsertString(i, strTmp);
 	return TRUE;
 }
-

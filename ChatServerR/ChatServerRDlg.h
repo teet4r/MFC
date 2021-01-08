@@ -1,25 +1,24 @@
 ﻿
-// ChatServerDlg.h: 헤더 파일
+// ChatServerRDlg.h: 헤더 파일
 //
 
 #pragma once
 
 #include "SocCom.h"
 
-
-// CChatServerDlg 대화 상자
-class CChatServerDlg : public CDialogEx
+// CChatServerRDlg 대화 상자
+class CChatServerRDlg : public CDialogEx
 {
 // 생성입니다.
 public:
-	CChatServerDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
+	CChatServerRDlg(CWnd* pParent = nullptr);	// 표준 생성자입니다.
 
 	CSocServer m_socServer; // 서버용 소켓
 	CSocCom* m_socCom; // 통신용 소켓
 
 // 대화 상자 데이터입니다.
 #ifdef AFX_DESIGN_TIME
-	enum { IDD = IDD_CHATSERVER_DIALOG };
+	enum { IDD = IDD_CHATSERVERR_DIALOG };
 #endif
 
 	protected:
@@ -35,22 +34,16 @@ protected:
 	afx_msg void OnSysCommand(UINT nID, LPARAM lParam);
 	afx_msg void OnPaint();
 	afx_msg HCURSOR OnQueryDragIcon();
-
-	afx_msg void OnClose();
-	afx_msg void OnButton2();
-//	afx_msg void OnButtonSend();
-	// AFX_MSG
-	afx_msg LPARAM OnAccept(UINT wParam, LPARAM lParam);
-	afx_msg LPARAM OnReceive(UINT wParam, LPARAM lParam);
 	DECLARE_MESSAGE_MAP()
 public:
 	afx_msg void OnBnClickedCancel();
-	CString m_strSend;
-	CListBox m_list;
-	CString m_strStatus;
-	afx_msg void OnBnClickedButtonExit();
-	afx_msg void OnStnClickedStaticStatus();
-	CButton m_btnSend;
-	CButton m_btnExit;
 	afx_msg void OnBnClickedButtonSend();
+	afx_msg void OnLbnSelchangeList1();
+	afx_msg void OnBnClickedExit();
+	afx_msg LPARAM OnAccept(UINT wParam, LPARAM lParam);
+	afx_msg LPARAM OnReceive(UINT wParam, LPARAM lParam);
+	CListBox m_list;
+//	CEdit m_strSend;
+	CString m_strSend;
+	CString m_strStatus;
 };

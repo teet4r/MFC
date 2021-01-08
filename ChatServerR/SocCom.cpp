@@ -2,8 +2,10 @@
 //
 
 #include "pch.h"
-#include "ChatClient.h"
+#include <afxsock.h>
+#include "ChatServerR.h"
 #include "SocCom.h"
+
 
 // CSocCom
 
@@ -17,10 +19,14 @@ CSocCom::~CSocCom()
 
 
 // CSocCom 멤버 함수
+
+
 void CSocCom::Init(HWND hWnd)
 {
+	// TODO: 여기에 구현 코드 추가.
 	m_hWnd = hWnd;
 }
+
 
 void CSocCom::OnReceive(int nErrorCode)
 {

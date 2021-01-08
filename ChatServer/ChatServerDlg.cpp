@@ -53,7 +53,7 @@ END_MESSAGE_MAP()
 CChatServerDlg::CChatServerDlg(CWnd* pParent /*=nullptr*/)
 	: CDialogEx(IDD_CHATSERVER_DIALOG, pParent)
 	, m_strSend(_T(""))
-	, m_strStatus(_T(""))
+	, m_strStatus(_T("대기중"))
 {
 	m_hIcon = AfxGetApp()->LoadIcon(IDR_MAINFRAME);
 }
@@ -64,6 +64,8 @@ void CChatServerDlg::DoDataExchange(CDataExchange* pDX)
 	DDX_Text(pDX, IDC_EDIT_SEND, m_strSend);
 	DDX_Control(pDX, IDC_LIST1, m_list);
 	DDX_Text(pDX, IDC_STATIC_STATUS, m_strStatus);
+	DDX_Control(pDX, IDC_BUTTON_SEND, m_btnSend);
+	DDX_Control(pDX, IDC_BUTTON_EXIT, m_btnExit);
 }
 
 BEGIN_MESSAGE_MAP(CChatServerDlg, CDialogEx)
@@ -71,14 +73,14 @@ BEGIN_MESSAGE_MAP(CChatServerDlg, CDialogEx)
 	ON_WM_PAINT()
 	ON_WM_QUERYDRAGICON()
 	ON_WM_CLOSE()
-	ON_BN_CLICKED(IDC_BUTTON_EXIT, OnButton2)
-	ON_BN_CLICKED(IDC_BUTTON_SEND, OnButtonSend)
+//	ON_BN_CLICKED(IDC_BUTTON_EXIT, OnButton2)
+//	ON_BN_CLICKED(IDC_BUTTON_SEND, OnBnClickedButtonSend)
 	ON_MESSAGE(UM_ACCEPT, OnAccept)
 	ON_MESSAGE(UM_RECEIVE, OnReceive)
 //	ON_BN_CLICKED(IDC_EXIT, &CChatServerDlg::OnBnClickedExit)
 //	ON_STN_CLICKED(IDC_STATIC_STATUS, &CChatServerDlg::OnStnClickedStaticStatus)
-
-ON_STN_CLICKED(IDC_STATIC_STATUS, &CChatServerDlg::OnStnClickedStaticStatus)
+	ON_STN_CLICKED(IDC_STATIC_STATUS, &CChatServerDlg::OnStnClickedStaticStatus)
+	ON_BN_CLICKED(IDC_BUTTON_SEND, &CChatServerDlg::OnBnClickedButtonSend)
 END_MESSAGE_MAP()
 
 
@@ -198,45 +200,41 @@ void CChatServerDlg::OnBnClickedCancel()
 
 void CChatServerDlg::OnClose()
 {
-	m_socCom->Close();
-	delete m_socCom;
 }
 
 void CChatServerDlg::OnButton2()
 {
-	m_socCom->Close();
-	delete m_socCom;
 }
 
-void CChatServerDlg::OnButtonSend()
-{
-	UpdateData(TRUE);
-	char pTmp[256];
-	CString strTmp;
-	// pTmp에 전송할 데이터 입력
-	memset(pTmp, '\0', 256);
-	memcpy(pTmp, (unsigned char*)(LPCTSTR)m_strSend, 256);
-	// 전송
-	m_socCom->Send(pTmp, 256);
-	
-	// 전송한 데이터도 리스트박스에 보여준다
-	strTmp.Format(_T("%s"), (LPCTSTR)pTmp);
-	int i = m_list.GetCount();
-	m_list.InsertString(i, strTmp);
-}
+//void CChatServerDlg::OnButtonSend()
+//{
+//	UpdateData(TRUE);
+//	TCHAR pTmp[256];
+//	CString strTmp;
+//	// pTmp에 전송할 데이터 입력
+//	memset(pTmp, '\0', 256);
+//	memcpy(pTmp, (unsigned char*)(LPCTSTR)m_strSend, 256);
+//	// 전송
+//	m_socCom->Send(pTmp, 256);
+//	
+//	// 전송한 데이터도 리스트박스에 보여준다
+//	strTmp.Format(_T("%s"), (LPCTSTR)pTmp);
+//	int i = m_list.GetCount();
+//	m_list.InsertString(i, strTmp);
+//}
 
 void CChatServerDlg::OnBnClickedButtonExit()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
-	m_socCom->Close();
-	delete m_socCom;
 }
 
 LPARAM CChatServerDlg::OnAccept(UINT wParam, LPARAM lParam)
 {
 	// 클라이언트에서 접속 요청이 왔을 때
+	UpdateData(TRUE);
 	m_strStatus = "접속성공";
-	m_list.InsertString(m_list.GetCount(), m_strStatus);
+	MessageBox(m_strStatus);
+//	m_list.InsertString(m_list.GetCount(), m_strStatus);
 
 	// 통신용 소켓을 생성한 뒤
 	m_socCom = new CSocCom;
@@ -276,4 +274,29 @@ LPARAM CChatServerDlg::OnReceive(UINT wParam, LPARAM lPARAM)
 void CChatServerDlg::OnStnClickedStaticStatus()
 {
 	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+}
+
+
+void CChatServerDlg::OnBnClickedButtonSend()
+{
+	// TODO: 여기에 컨트롤 알림 처리기 코드를 추가합니다.
+	UpdateData(TRUE);
+	char pTmp[256];
+	CString strTmp;
+	// pTmp에 전송할 데이터 입력
+	memset(pTmp, '\0', 256);
+	memcpy(pTmp, (unsigned char*)(LPCTSTR)m_strSend, 256);
+	// 전송
+
+	if (m_socCom->Send(pTmp, 256) == FALSE) {
+		MessageBox(_T("Send Error"));
+	}
+	else {
+		MessageBox(_T("Send Success"));
+	}
+
+	// 전송한 데이터도 리스트박스에 보여준다
+	strTmp.Format(_T("%s"), pTmp);
+	int i = m_list.GetCount();
+	m_list.InsertString(i, strTmp);
 }
