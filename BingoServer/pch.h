@@ -6,18 +6,18 @@
 
 #ifndef PCH_H
 #define PCH_H
-
 #define _CRT_SECURE_NO_WARNINGS
+
 // 여기에 미리 컴파일하려는 헤더 추가
+#include <afxsock.h>	// MFC 소켓 익스텐션
 #include "framework.h"
-#include <afxsock.h>
 #include "SocCom.h"
 
-#define UM_RECEIVE	WM_USER + 2
-
-#define SOC_GAMESTART 1
-#define SOC_GAMEEND 2
-#define SOC_TEXT 3
-#define SOC_CHECK 4
+#define UM_ACCEPT			WM_USER + 1
+#define UM_RECEIVE			WM_USER + 2
+#define SOC_GAMESTART		1
+#define SOC_GAMEEND			2
+#define SOC_TEXT			3
+#define SOC_CHECK			4
 
 #endif //PCH_H

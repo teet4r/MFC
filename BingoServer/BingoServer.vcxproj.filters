@@ -15,10 +15,10 @@
     </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="BingoCnt.h">
+    <ClInclude Include="BingoServer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="BingoCntDlg.h">
+    <ClInclude Include="BingoServerDlg.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
     <ClInclude Include="framework.h">
@@ -33,42 +33,42 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="DlgConnect.h">
+    <ClInclude Include="SocCom.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="SocCom.h">
+    <ClInclude Include="SocServer.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="BingoCnt.cpp">
+    <ClCompile Include="BingoServer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="BingoCntDlg.cpp">
+    <ClCompile Include="BingoServerDlg.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="DlgConnect.cpp">
+    <ClCompile Include="SocCom.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
-    <ClCompile Include="SocCom.cpp">
+    <ClCompile Include="SocServer.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
-    <ResourceCompile Include="BingoCnt.rc">
+    <ResourceCompile Include="BingoServer.rc">
       <Filter>리소스 파일</Filter>
     </ResourceCompile>
   </ItemGroup>
   <ItemGroup>
-    <None Include="res\BingoCnt.rc2">
+    <None Include="res\BingoServer.rc2">
       <Filter>리소스 파일</Filter>
     </None>
   </ItemGroup>
   <ItemGroup>
-    <Image Include="res\BingoCnt.ico">
+    <Image Include="res\BingoServer.ico">
       <Filter>리소스 파일</Filter>
     </Image>
   </ItemGroup>
