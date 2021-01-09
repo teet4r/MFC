@@ -33,9 +33,6 @@
     <ClInclude Include="pch.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="..\ChatClient\SocCom.h">
-      <Filter>헤더 파일</Filter>
-    </ClInclude>
     <ClInclude Include="DlgConnect.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
@@ -48,9 +45,6 @@
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
-      <Filter>소스 파일</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ChatClient\SocCom.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
     <ClCompile Include="DlgConnect.cpp">

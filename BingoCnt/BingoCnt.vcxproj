@@ -183,7 +183,6 @@
     </ResourceCompile>
   </ItemDefinitionGroup>
   <ItemGroup>
-    <ClInclude Include="..\ChatClient\SocCom.h" />
     <ClInclude Include="BingoCnt.h" />
     <ClInclude Include="BingoCntDlg.h" />
     <ClInclude Include="DlgConnect.h" />
@@ -193,7 +192,6 @@
     <ClInclude Include="targetver.h" />
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="..\ChatClient\SocCom.cpp" />
     <ClCompile Include="BingoCnt.cpp" />
     <ClCompile Include="BingoCntDlg.cpp" />
     <ClCompile Include="DlgConnect.cpp" />
